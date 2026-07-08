@@ -1,6 +1,29 @@
 import { WorkspaceSettings, LLMChatMessage } from '../types/index';
 import { TOOL_REGISTRY } from './agent-kernel/toolRegistry';
 
+const LLAMA_ENDPOINT = "http://127.0.0.1:8080/v1/chat/completions";
+
+export async function sendToQwen3(messages: any[]) {
+  const response = await fetch(LLAMA_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "qwen3-coder",
+      messages: messages,
+      temperature: 0.2,
+      stream: false,
+      max_tokens: 2048
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`LLM mudo. Status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
 export async function* streamChat(
   messages: LLMChatMessage[],
   settings: WorkspaceSettings,
