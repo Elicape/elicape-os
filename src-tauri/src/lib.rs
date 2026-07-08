@@ -105,6 +105,34 @@ fn test_fs_real() -> Result<String, String> {
     }
 }
 
+fn start_llama_server(_app_handle: &AppHandle) {
+    let home = std::env::var("HOME").expect("No HOME env var");
+
+    let bin_path = format!("{}/llama.cpp/build/bin/llama-server", home);
+    let model_path = format!("{}/models/Qwen3-coder-3.4b-20x-e32-q8_0.gguf", home);
+    let template_path = format!("{}/models/chat_template-qwen3.jinja", home);
+
+    println!("[ELICAPE CORE] Despertando Qwen3-coder... Sin Hitlers.");
+
+    match Command::new(&bin_path)
+        .args([
+            "-m", &model_path,
+            "--chat-template-file", &template_path,
+            "--port", "8080",
+            "--host", "127.0.0.1",
+            "-c", "4096",
+            "-ngl", "35",
+            "--no-mmap",
+        ])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+    {
+        Ok(_) => println!("[ELICAPE CORE] llama-server Qwen3-coder-3.4b corriendo en :8080"),
+        Err(e) => eprintln!("[ELICAPE CORE] WARN: No se pudo arrancar llama-server: {}. Revise ~/llama.cpp/build/bin/", e),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -117,9 +145,11 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .manage(ServerState(Mutex::new(None)))
+        .manage(wezterm::WeztermState(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![start_server, stop_server, run_shell_command, test_fs_real, wezterm::launch_wezterm_cage])
-        .setup(|_app| {
+        .setup(|app| {
             let _ = test_fs_real();
+            start_llama_server(&app.handle());
             Ok(())
         })
         .run(tauri::generate_context!())
