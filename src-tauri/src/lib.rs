@@ -107,28 +107,33 @@ fn test_fs_real() -> Result<String, String> {
 
 fn start_llama_server(_app_handle: &AppHandle) {
     let home = std::env::var("HOME").expect("No HOME env var");
-
+    let project_root = format!("{}/IA-APPS/drafts/desktop-ai-coding", home);
     let bin_path = format!("{}/llama.cpp/build/bin/llama-server", home);
-    let model_path = format!("{}/models/Qwen3-coder-3.4b-20x-e32-q8_0.gguf", home);
+    let preset_path = format!("{}/.elicape/server.ini", project_root);
     let template_path = format!("{}/models/chat_template-qwen3.jinja", home);
 
-    println!("[ELICAPE CORE] Despertando Qwen3-coder... Sin Hitlers.");
+    println!("[ELICAPE CORE] Arrancando router Qwen3...");
 
     match Command::new(&bin_path)
         .args([
-            "-m", &model_path,
-            "--chat-template-file", &template_path,
-            "--port", "8080",
+            "--models-preset", &preset_path,
+            "--models-max", "1",
+            "--no-models-autoload",
+            "--alias", "coder_3b,reason_6b,vl_2b,vl_8b,chat_4b,micro_08b",
             "--host", "127.0.0.1",
+            "--port", "8080",
+            "--chat-template-file", &template_path,
+            "--tools", "write_file,read_file,exec_shell_command,get_datetime",
             "-c", "4096",
-            "-ngl", "35",
-            "--no-mmap",
+            "-ngl", "0",
+            "--no-ui",
+            "--no-cache-prompt",
         ])
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
     {
-        Ok(_) => println!("[ELICAPE CORE] llama-server Qwen3-coder-3.4b corriendo en :8080"),
+        Ok(_) => println!("[ELICAPE CORE] Router Qwen3 escuchando en :8080 (--models-max 1, --no-models-autoload)"),
         Err(e) => eprintln!("[ELICAPE CORE] WARN: No se pudo arrancar llama-server: {}. Revise ~/llama.cpp/build/bin/", e),
     }
 }

@@ -1,0 +1,28 @@
+# Gramática para kernel ReAct
+root ::= tool-call | text-response
+
+tool-call ::= ws "<tool_call>" ws json-object ws "</tool_call>"
+
+text-response ::= (
+    [^<] |
+    "<" ( [^t] |
+          "t" [^o] |
+          "to" [^o] |
+          "too" [^l] |
+          "tool" [^_] |
+          "tool_" [^c] |
+          "tool_c" [^a] |
+          "tool_ca" [^l] |
+          "tool_cal" [^l] |
+          "tool_call" [^>] )
+)+ ws
+
+json-object ::= "{" ws ( string ws ":" ws value ( "," ws string ws ":" ws value )* )? ws "}"
+array ::= "[" ws ( value ( "," ws value )* )? ws "]"
+value ::= string | number | json-object | array | "true" | "false" | "null"
+string ::= "\"" (
+    [^"\\] |
+    "\\" ( ["\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] )
+)* "\""
+number ::= "-"? ( [0-9] | [1-9] [0-9]* ) ( "." [0-9]+ )? ( [eE] [-+]? [0-9]+ )?
+ws ::= [ \t\n\r]*

@@ -1,0 +1,5 @@
+[RELLENAR DESPUÉS — CAPA 3: SKILL REACT]
+Eres experto en React + TypeScript.
+- Usa componentes funcionales.
+- Escribe estilos con Tailwind.
+- No añadas dependencias nuevas sin preguntar.
