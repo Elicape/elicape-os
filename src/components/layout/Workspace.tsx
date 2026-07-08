@@ -9,10 +9,11 @@ import { FileViewer } from '../editor/FileViewer';
 import { ChatPanel } from '../chat/ChatPanel';
 import { SettingsPanel } from '../settings/SettingsPanel';
 import { SystemLogs } from './SystemLogs';
+import { AboutDialog } from './AboutDialog';
 
 export function Workspace() {
   const { settings } = useSettingsContext();
-  const { settingsPanelOpen, logs, clearLogs, rootPath } = useWorkspaceContext();
+  const { settingsPanelOpen, aboutDialogOpen, logs, clearLogs, rootPath } = useWorkspaceContext();
   const fileSystem = useFileSystem();
   const chat = useChat(settings, rootPath, fileSystem.refreshFile);
 
@@ -72,6 +73,9 @@ export function Workspace() {
 
       {/* Settings Panel */}
       {settingsPanelOpen && <SettingsPanel />}
+
+      {/* About Dialog */}
+      {aboutDialogOpen && <AboutDialog />}
     </div>
   );
 }

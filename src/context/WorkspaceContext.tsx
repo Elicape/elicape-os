@@ -5,11 +5,13 @@ interface WorkspaceContextType {
   leftPanelOpen: boolean;
   rightPanelOpen: boolean;
   settingsPanelOpen: boolean;
+  aboutDialogOpen: boolean;
   rootPath: string | null;
   logs: LogEntry[];
   toggleLeftPanel: () => void;
   toggleRightPanel: () => void;
   toggleSettingsPanel: () => void;
+  toggleAboutDialog: () => void;
   setRootPath: (path: string | null) => void;
   addLog: (message: string, type?: LogEntry['type']) => void;
   clearLogs: () => void;
@@ -21,12 +23,14 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [settingsPanelOpen, setSettingsPanelOpen] = useState(false);
+  const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
   const [rootPath, setRootPath] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
   const toggleLeftPanel = useCallback(() => setLeftPanelOpen((prev) => !prev), []);
   const toggleRightPanel = useCallback(() => setRightPanelOpen((prev) => !prev), []);
   const toggleSettingsPanel = useCallback(() => setSettingsPanelOpen((prev) => !prev), []);
+  const toggleAboutDialog = useCallback(() => setAboutDialogOpen((prev) => !prev), []);
 
   const addLog = useCallback((message: string, type: LogEntry['type'] = 'info') => {
     const newLog: LogEntry = {
@@ -46,11 +50,13 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         leftPanelOpen,
         rightPanelOpen,
         settingsPanelOpen,
+        aboutDialogOpen,
         rootPath,
         logs,
         toggleLeftPanel,
         toggleRightPanel,
         toggleSettingsPanel,
+        toggleAboutDialog,
         setRootPath,
         addLog,
         clearLogs,

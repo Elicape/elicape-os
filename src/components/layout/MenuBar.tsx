@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSettingsContext } from '../../context/SettingsContext';
+import { useWorkspaceContext } from '../../context/WorkspaceContext';
 import { getFileSystemAdapter } from '../../lib/fs';
 
 interface MenuBarProps {
@@ -22,6 +23,7 @@ export function MenuBar({
   onClearChat
 }: MenuBarProps) {
   const { settings, updateSettings } = useSettingsContext();
+  const { toggleAboutDialog } = useWorkspaceContext();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const menus = [
@@ -80,6 +82,7 @@ export function MenuBar({
         },
         { label: 'Clear History', action: onClearChat },
         { type: 'separator' },
+        { label: 'About ELICAPE OS', action: toggleAboutDialog },
         { 
           label: `Agent Mode: ${settings.agentMode.toUpperCase()}`, 
           action: () => {
