@@ -1,1 +1,49 @@
-HIMNO OFICIAL: https://aimusicgen.ai/[PEGAR_LINK_COMPARTIR]
+# HIMNOS OFICIALES ELICAPE OS v0.2.0
+
+1. ANTIGRAVITY - CODE EDIT CREATION
+   Link: https://aimusicgen.ai/share/5c96d7a9-4fa6-49b6-b128-590f2f1597f1
+   Estilo: Rock Opera, Pink Floyd style, 120 BPM
+   Nota: Requiere cuenta en Aimusicgen para escuchar completo
+
+2. ROCK_AIAAAIIIIIAAIAAIIIIIIIIIIIIIIIIIUIIIIAUIIIII
+   Link: https://aimusicgen.ai/share/3534f375-8a52-46f3-a7b5-b6ef47b1c1fe
+   Estilo: Symphonic Metal, Experimental Rock, 666 BPM
+   Nota: Requiere cuenta en Aimusicgen para escuchar completo
+
+---
+
+AVISO LEGAL v0.2.0
+Mureka: Free crear, pagar descargar.
+Aimusicgen: Free crear, pagar descargar, pagar compartir público.
+Estrategia ELICAPE: Links directos. Si no tienes cuenta, telegram o letra free.
+
+LETRA "ANTIGRAVITY" - DOMINIO PÚBLICO:
+[HIMNO OFICIAL - ELICAPE OS v0.2.0
+"ANTIGRAVITY - CODE EDIT CREATION"
+Levantamos el kernel en la niebla,
+Qwen tonto, constitución en tabla.
+Tres modos, una sola fe:
+PLAN piensa, APPLY crea, SHELL ve.
+
+No hay paranoia, no hay candado,
+Solo sys prompt bien redactado.
+Wezterm jaula, bashrc guardián,
+FS real toca disco al fin.
+
+Si GPT borra, si Gemini falla,
+Nosotros escribimos en la muralla:
+/tmp/ELICAPE_VIVO.txt
+Testigo de que el tanque ruge.
+
+¡RELAX! ¡SIMPLEZA!
+¡APPLY MODE DISPARA!
+¡SHELL MODE GENERAL!
+¡ANTIGRAVITY VUELA!
+
+HOLA MUNDO, GitHub.
+HOLA MUNDO, GPT.
+HOLA MUNDO, Gemini.
+NOSOTROS YA ESCRIBIMOS.]
+
+El oído es libre. El MP3 no. 
+Firmado: Sergio J Palacio
