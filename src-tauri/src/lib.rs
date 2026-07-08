@@ -118,7 +118,6 @@ fn start_llama_server(_app_handle: &AppHandle) {
         .args([
             "--models-preset", &preset_path,
             "--models-max", "1",
-            "--no-models-autoload",
             "--alias", "coder_3b,reason_6b,vl_2b,vl_8b,chat_4b,micro_08b",
             "--host", "127.0.0.1",
             "--port", "8080",
