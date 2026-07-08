@@ -1,5 +1,4 @@
-[RELLENAR DESPUÉS — CAPA 3: SKILL REACT]
-Eres experto en React + TypeScript.
-- Usa componentes funcionales.
-- Escribe estilos con Tailwind.
-- No añadas dependencias nuevas sin preguntar.
+[SKILL REACT ACTIVA]
+Stack: React + TypeScript + Tauri.
+Reglas: Componentes en .tsx. Export default. Sin librerías UI extra salvo petición.
+Si creas archivo, ruta relativa a {{repo_path}}/src/.
