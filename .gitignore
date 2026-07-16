@@ -1,0 +1,67 @@
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env
+
+# Drafts / temp files (not committed)
+_drafts_no_git/
+/_drafts_no_git/
+*.zip
+sd-master-*/
+HOLA_MUNDO.txt
+/tmp/
+
+# App runtime data (user-local, not committed)
+.elicape/.tmp/
+models/*.gguf
+*.bak
+# Elicape local - no va a git
+.elicape/
+.agent/
+.bolt/
+.local-ai/
+*.bak
+*.tmp
+
+# Binarios pesados - solo deja los 7 que ya tienes en GitHub
+bin/libggml-cpu-*.so
+bin/libggml-*.so.0*
+bin/libllama-*.so*
+bin/libmtmd*.so*
+bin/libsharpyuv*
+bin/libwebp*
+bin/libwebm*
+bin/libstable-diffusion*
+bin/sd-server
+bin/models.ini
+
+# Capturas y docs temporales
+*.png
+!src/assets/*.png
+ELICAPE_QUE_ES.md
+sistema-listo.png
+pendiente-de-aprobacion.png
+Nuevo-aprove.png
+
+# Build
+dist/
+node_modules/
