@@ -5,16 +5,16 @@ import { getStorageItem, setStorageItem } from '../lib/storage';
 const SETTINGS_KEY = 'workspace_settings';
 
 const DEFAULT_SETTINGS: WorkspaceSettings = {
-  endpoint: 'http://localhost:11434/v1',
-  modelName: 'llama3',
+  endpoint: 'http://127.0.0.1:8080/v1',
+  modelName: 'qwen3-coder-3b',
   systemPrompt: 'You are a helpful coding assistant. Always wrap your internal reasoning and thought process inside <think> and </think> tags before providing your final answer. Provide concise, practical answers.',
   temperature: 0.7,
   topP: 0.9,
   maxTokens: 2048,
   writePermissionMode: 'ask',
   binaryPath: 'bin/llama-server',
-  modelPath: 'models/Qwen3-Code-Reasoning-Instruct-6B-Q8_0.gguf',
-  serverPort: 11434,
+  modelPath: 'models/Qwen3-coder-3.4b-20x-e32-q8_0.gguf',
+  serverPort: 8080,
   serverArgs: '-cnv',
   templatePath: 'qwen3-coder-template.jinja',
   autoStartServer: false,

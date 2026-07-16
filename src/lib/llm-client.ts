@@ -1,5 +1,5 @@
 import { WorkspaceSettings, LLMChatMessage } from '../types/index';
-import { TOOL_REGISTRY } from './agent-kernel/toolRegistry';
+import { buildLlamaPayload, getToolFallbackInstruction } from './llm/llamaPayload';
 
 const LLAMA_ENDPOINT = "http://127.0.0.1:8080/v1/chat/completions";
 
@@ -35,29 +35,39 @@ export async function* streamChat(
   }
   url.pathname += 'chat/completions';
 
+  // tools siempre activas cuando streamChat es llamado (el agente necesita actuar)
+  const payload = buildLlamaPayload({
+    model: settings.modelName,
+    messages,
+    temperature: settings.temperature,
+    topP: settings.topP,
+    maxTokens: settings.maxTokens,
+    stream: true,
+    grammar: settings.grammar,
+    chatTemplate: settings.chatTemplate,
+    tools: true,
+  });
+
+  // Opción A: si tools ganaron y había grammar, añadir instrucción compensatoria
+  if (settings.grammar) {
+    const fallbackInstruction = getToolFallbackInstruction();
+    // Insertar al principio de los messages (tras system) para que el LLM sepa cómo responder
+    const systemIdx = messages.findIndex(m => m.role === 'system');
+    if (systemIdx >= 0) {
+      messages = messages.map((m, i) =>
+        i === systemIdx
+          ? { ...m, content: m.content + '\n\n' + fallbackInstruction }
+          : m
+      );
+    }
+  }
+
   const response = await fetch(url.toString(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: settings.modelName,
-      messages,
-      temperature: settings.temperature,
-      top_p: settings.topP,
-      max_tokens: settings.maxTokens,
-      stream: true,
-      ...(settings.grammar ? { grammar: settings.grammar } : {}),
-      ...(settings.chatTemplate ? { chat_template: settings.chatTemplate } : {}),
-      tools: Object.values(TOOL_REGISTRY).map(tool => ({
-        type: 'function',
-        function: {
-          name: tool.name,
-          description: tool.description,
-          parameters: tool.parameters,
-        },
-      })),
-    }),
+    body: JSON.stringify(payload),
     signal,
   });
 

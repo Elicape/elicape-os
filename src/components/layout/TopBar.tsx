@@ -1,8 +1,7 @@
-import { Settings, Trash2, Code2, FolderOpen, Terminal } from 'lucide-react';
+import { Settings, Trash2, Code2, Terminal, GitBranch, Server, Zap } from 'lucide-react';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { useWorkspaceContext } from '../../context/WorkspaceContext';
 import { useLlamaServerContext } from '../../context/LlamaServerContext';
-import { Server, Zap } from 'lucide-react';
 import { MenuBar } from './MenuBar';
 import { invoke } from '@tauri-apps/api/core';
 
@@ -15,6 +14,7 @@ interface TopBarProps {
   onSaveSession: (name: string) => Promise<boolean>;
   onLoadSession: (path: string) => Promise<boolean>;
   rootPath: string | null;
+  onOpenConfigGraph?: () => void;
 }
 
 export function TopBar({ 
@@ -25,9 +25,10 @@ export function TopBar({
   currentFilePath,
   onSaveSession,
   onLoadSession,
-  rootPath 
+  rootPath,
+  onOpenConfigGraph
 }: TopBarProps) {
-  const { settings } = useSettingsContext();
+  const { settings, updateSettings } = useSettingsContext();
   const { toggleSettingsPanel } = useWorkspaceContext();
   const { isRunning, startServer, stopServer } = useLlamaServerContext();
 
@@ -73,17 +74,29 @@ export function TopBar({
           <div className="hidden lg:flex items-center gap-2 text-[10px] text-gray-400 border-l border-gray-700 pl-4">
             <span className="bg-gray-800 px-1.5 py-0.5 rounded text-blue-300 font-mono">{settings.modelName}</span>
             <span className="text-gray-600">•</span>
-            <span className={`px-1.5 py-0.5 rounded font-mono ${
-              settings.agentMode === 'shell' 
-                ? 'bg-yellow-800/30 text-yellow-400' 
-                : 'text-gray-500'
-            }`}>{settings.agentMode.toUpperCase()} MODE</span>
+            <button
+              onClick={() => {
+                const next = settings.agentMode === 'plan' ? 'apply' : 'plan';
+                updateSettings({ agentMode: next });
+              }}
+              className={`px-1.5 py-0.5 rounded font-mono cursor-pointer transition-colors ${
+                settings.agentMode === 'plan'
+                  ? 'bg-yellow-800/30 text-yellow-400 hover:bg-yellow-800/40'
+                  : 'bg-green-800/30 text-green-400 hover:bg-green-800/40'
+              }`}
+              title={`Click to switch to ${settings.agentMode === 'plan' ? 'APPLY' : 'PLAN'} mode`}
+            >
+              {settings.agentMode.toUpperCase()} MODE
+            </button>
           </div>
 
           <div className="flex items-center gap-1">
             {settings.agentMode === 'shell' && (
               <button
-                onClick={() => window.__TAURI__ && invoke('launch_wezterm_cage')}
+                onClick={() => (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__TAURI__ && invoke('launch_wezterm_cage')
+)}
                 className="p-1.5 rounded hover:bg-gray-800 transition-colors text-yellow-400 hover:text-yellow-300"
                 title="Open Wezterm Console"
               >
@@ -97,6 +110,15 @@ export function TopBar({
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
+            {onOpenConfigGraph && (
+              <button
+                onClick={onOpenConfigGraph}
+                className="p-1.5 rounded hover:bg-gray-800 transition-colors text-purple-400 hover:text-purple-300"
+                title="Config Graph"
+              >
+                <GitBranch className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button
               onClick={toggleSettingsPanel}
               className="p-1.5 rounded hover:bg-gray-800 transition-colors text-gray-400 hover:text-gray-200"

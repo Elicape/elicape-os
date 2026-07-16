@@ -24,6 +24,7 @@
       "identifier": "fs:scope",
       "allow": [
         { "path": "$HOME/**" },
+        { "path": "/tmp/**" },
         { "path": "/" }
       ]
     },
@@ -35,6 +36,11 @@
         {
           "name": "llama-server",
           "cmd": "bin/llama-server",
+          "args": true
+        },
+        {
+          "name": "sd-server",
+          "cmd": "bin/sd-server",
           "args": true
         }
       ]

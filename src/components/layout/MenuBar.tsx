@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSettingsContext } from '../../context/SettingsContext';
 import { useWorkspaceContext } from '../../context/WorkspaceContext';
 import { getFileSystemAdapter } from '../../lib/fs';

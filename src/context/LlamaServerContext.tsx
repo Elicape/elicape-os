@@ -8,6 +8,8 @@ interface LlamaServerContextType {
   port: number | null;
   startServer: () => Promise<void>;
   stopServer: () => Promise<void>;
+  checkLlamaServer: () => Promise<boolean>;
+  startManagedServer: () => Promise<string>;
 }
 
 const LlamaServerContext = createContext<LlamaServerContextType | undefined>(undefined);

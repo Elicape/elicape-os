@@ -11,7 +11,11 @@ import { SettingsPanel } from '../settings/SettingsPanel';
 import { SystemLogs } from './SystemLogs';
 import { AboutDialog } from './AboutDialog';
 
-export function Workspace() {
+interface WorkspaceProps {
+  onOpenConfigGraph?: () => void;
+}
+
+export function Workspace({ onOpenConfigGraph }: WorkspaceProps) {
   const { settings } = useSettingsContext();
   const { settingsPanelOpen, aboutDialogOpen, logs, clearLogs, rootPath } = useWorkspaceContext();
   const fileSystem = useFileSystem();
@@ -28,21 +32,20 @@ export function Workspace() {
         onSaveSession={chat.saveSession}
         onLoadSession={chat.loadSession}
         rootPath={rootPath}
+        onOpenConfigGraph={onOpenConfigGraph}
       />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: File Tree */}
         <ResizablePanel defaultWidth={280} minWidth={200} maxWidth={500} className="bg-gray-900 border-r border-gray-700">
           <FileTree
             tree={fileSystem.fileTree}
             currentFile={fileSystem.currentFile?.path}
             onFileSelect={fileSystem.openFile}
             isLoading={fileSystem.isLoading}
-            onRefresh={() => fileSystem.loadDirectory(rootPath || '')}
+            onRefresh={fileSystem.loadDirectory}
           />
         </ResizablePanel>
 
-        {/* Center Panel: Editor */}
         <div className="flex-1 flex flex-col overflow-hidden bg-gray-950">
           <FileViewer
             file={fileSystem.currentFile}
@@ -55,7 +58,6 @@ export function Workspace() {
           />
         </div>
 
-        {/* Right Panel: Chat */}
         <ResizablePanel defaultWidth={350} minWidth={250} maxWidth={600} className="bg-gray-900 border-l border-gray-700 flex flex-col">
           <ChatPanel
             messages={chat.messages}
@@ -71,10 +73,7 @@ export function Workspace() {
 
       <SystemLogs logs={logs} onClear={clearLogs} />
 
-      {/* Settings Panel */}
       {settingsPanelOpen && <SettingsPanel />}
-
-      {/* About Dialog */}
       {aboutDialogOpen && <AboutDialog />}
     </div>
   );

@@ -4,8 +4,8 @@ import { streamChat } from '../lib/llm-client';
 import { StreamParser } from '../lib/streamParser';
 import { useAgentKernel } from './useAgentKernel';
 import { AgentSessionManager } from '../lib/agent-kernel/session';
-import { loadKernelConfig } from '../lib/agent-kernel/configLoader';
 import { assembleConversation } from '../lib/agent-kernel/messageBuilders';
+import { buildPrompt } from '../lib/promptBuilder';
 import { getFileSystemAdapter } from '../lib/fs';
 
 function generateId(): string {
@@ -109,23 +109,39 @@ export function useChat(settings: WorkspaceSettings, rootPath: string | null, on
         return;
       }
 
-      const config = await loadKernelConfig();
-      
-      let modeInstruction = '';
-      if (settings.agentMode === 'plan') {
-        modeInstruction = "\nYou are in PLAN mode. You must ONLY outline your approach and ask for feedback. Do NOT use any tools to modify files yet.";
+      // PLAN/APPLY MODE: usa PromptBuilder con GraphLoader + constitution + skills
+      const modeInstruction = settings.agentMode === 'plan'
+        ? "You are in PLAN mode. Outline your approach and ask for feedback. Do NOT use any tools to modify files yet."
+        : "You are in APPLY mode. Use tools directly to implement your plan.";
+
+      let builtMessages: LLMChatMessage[];
+      let routeModel: string;
+      let routeGrammar: string | undefined;
+
+      if (content?.trim()) {
+        try {
+          const result = await buildPrompt(content.trim(), messages, modeInstruction);
+          builtMessages = result.messages;
+          routeModel = result.route.model;
+          routeGrammar = result.route.grammar;
+        } catch (err) {
+          const errorMsg = err instanceof Error ? err.message : 'Prompt builder error';
+          setError(errorMsg);
+          setIsStreaming(false);
+          return;
+        }
+      } else if (sessionRef.current) {
+        builtMessages = [];
+        routeModel = '';
+        routeGrammar = undefined;
       } else {
-        modeInstruction = "\nYou are in APPLY mode. Use tools directly to implement your plan.";
+        return;
       }
 
-      const systemPromptWithContext = config.systemPrompt + modeInstruction +
-        (rootPath ? `\n\n[System Info]\nThe current project root directory path is: ${rootPath}` : '');
-      
       const activeSettings = {
         ...settings,
-        systemPrompt: systemPromptWithContext,
-        grammar: config.grammar,
-        chatTemplate: config.chatTemplate,
+        modelName: routeModel || settings.modelName,
+        grammar: routeGrammar || settings.grammar,
       };
 
       let session = sessionRef.current;
@@ -138,12 +154,8 @@ export function useChat(settings: WorkspaceSettings, rootPath: string | null, on
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, userMessage]);
-        
-        historyRef.current = [
-          { role: 'system', content: activeSettings.systemPrompt },
-          ...messages.map(msg => ({ role: msg.role, content: msg.content } as LLMChatMessage)),
-          { role: 'user', content: content.trim() }
-        ];
+
+        historyRef.current = builtMessages;
 
         const turnId = generateId();
         session = new AgentSessionManager(turnId);
@@ -159,7 +171,7 @@ export function useChat(settings: WorkspaceSettings, rootPath: string | null, on
         };
         setMessages((prev) => [...prev, assistantMessage]);
       } else if (session) {
-        // session already set
+        // session already set — continue multi-turn with existing historyRef
       } else {
         return;
       }

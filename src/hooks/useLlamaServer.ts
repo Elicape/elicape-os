@@ -4,10 +4,29 @@ import { listen } from '@tauri-apps/api/event';
 import { WorkspaceSettings } from '../types/index';
 import { useWorkspaceContext } from '../context/WorkspaceContext';
 
+async function tauriInvoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
+  const isTauri = typeof window !== 'undefined' && (window as any).__TAURI__ !== undefined;
+  if (!isTauri) throw new Error('Not in Tauri');
+  return invoke<T>(cmd, args);
+}
+
 export function useLlamaServer(settings: WorkspaceSettings) {
   const [isRunning, setIsRunning] = useState(false);
   const [pid, setPid] = useState<number | null>(null);
   const { addLog } = useWorkspaceContext();
+
+  const checkLlamaServer = useCallback(async (): Promise<boolean> => {
+    try {
+      return await tauriInvoke<boolean>('check_llama_server');
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const startManagedServer = useCallback(async (): Promise<string> => {
+    const result = await tauriInvoke<string>('start_llama_server');
+    return result;
+  }, []);
 
   const stopServer = useCallback(async () => {
     try {
@@ -34,7 +53,7 @@ export function useLlamaServer(settings: WorkspaceSettings) {
       }
 
       addLog(`Starting llama-server from ${settings.binaryPath}...`, 'info');
-      
+
       const args = [
         '-m', settings.modelPath || '',
         '--port', (settings.serverPort || 11434).toString(),
@@ -63,7 +82,7 @@ export function useLlamaServer(settings: WorkspaceSettings) {
 
   useEffect(() => {
     let unlisten: (() => void) | null = null;
-    
+
     const setupListener = async () => {
       unlisten = await listen<string>('server-log', (event) => {
         addLog(`[llama-server] ${event.payload}`, 'info');
@@ -75,7 +94,7 @@ export function useLlamaServer(settings: WorkspaceSettings) {
     if (settings.autoStartServer && !isRunning) {
       startServer();
     }
-    
+
     return () => {
       if (unlisten) unlisten();
     };
@@ -86,6 +105,8 @@ export function useLlamaServer(settings: WorkspaceSettings) {
     pid,
     port: settings.serverPort || 11434,
     startServer,
-    stopServer
+    stopServer,
+    checkLlamaServer,
+    startManagedServer,
   };
 }
